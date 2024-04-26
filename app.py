@@ -35,7 +35,8 @@ if uploaded_file is not None:
     with open(filename, 'wb') as f: 
         f.write(bytes_data)
 
-    documents_with_instruction = LlamaParse(
+    with st.spinner('Wait for it...'):
+        documents_with_instruction = LlamaParse(
     result_type="markdown",
     parsing_instruction="""
 This document is an inspection report.
@@ -43,7 +44,9 @@ Output all the tables as it is.
 Output the Product photo. """,
 ).load_data("samplereport.pdf")
     
-    print(documents_with_instruction)
+    
+    
+    st.success('Done!')
 
     st.markdown(documents_with_instruction[0].text)
 
