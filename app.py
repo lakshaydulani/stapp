@@ -27,7 +27,7 @@ if uploaded_file is not None:
     cwd = os.getcwd()
     filename = os.path.join(cwd, "samplereport.pdf")
     
-    with st.spinner('Working on the document..'):
+    with st.spinner('Loading..'):
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
 
@@ -57,12 +57,13 @@ if uploaded_file is not None:
                 st.session_state.messages = []
                 
             if prompt := st.chat_input("Ask your questions about the document"):
-                st.session_state.messages.append({"role": "user", "content": prompt})
+                
                 with st.chat_message("user"):
                     st.markdown(prompt)
-                with st.chat_message("assistant"):
-                    response_1_i = query_engine_instruction.query(prompt)
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                response_1_i = query_engine_instruction.query(prompt)
+                with st.chat_message("assistant"):                    
                     st.markdown(response_1_i)
-                    st.session_state.messages.append({"role": "assistant", "content": response_1_i})
+                st.session_state.messages.append({"role": "assistant", "content": response_1_i})
             
     
