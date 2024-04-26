@@ -38,27 +38,31 @@ if uploaded_file is not None:
                                         This document is a report.
                                         Output all the tables as it is.""",
                                         ).load_data("samplereport.pdf")
-
-        node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
         
-        nodes_instruction = node_parser_instruction.get_nodes_from_documents(documents_with_instruction)
-        (base_nodes_instruction,objects_instruction,) = node_parser_instruction.get_nodes_and_objects(nodes_instruction)
+        tab1, tab2 = st.tabs(["Chatbox", "Parsed Report"])
+        tab2.markdown(documents_with_instruction[0].text)
 
-        recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
-        
-        query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
-    
-    
-        if "messages" not in st.session_state:
-            st.session_state.messages = []
+        with tab1:
+            node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
             
-        if prompt := st.chat_input("Ask your questions about the document"):
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            with st.chat_message("user"):
-                st.markdown(prompt)
-            with st.chat_message("assistant"):
-                response_1_i = query_engine_instruction.query(prompt)
-                st.markdown(response_1_i)
-                st.session_state.messages.append({"role": "assistant", "content": response_1_i})
+            nodes_instruction = node_parser_instruction.get_nodes_from_documents(documents_with_instruction)
+            (base_nodes_instruction,objects_instruction,) = node_parser_instruction.get_nodes_and_objects(nodes_instruction)
+
+            recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
+            
+            query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
         
+        
+            if "messages" not in st.session_state:
+                st.session_state.messages = []
+                
+            if prompt := st.chat_input("Ask your questions about the document"):
+                st.session_state.messages.append({"role": "user", "content": prompt})
+                with st.chat_message("user"):
+                    st.markdown(prompt)
+                with st.chat_message("assistant"):
+                    response_1_i = query_engine_instruction.query(prompt)
+                    st.markdown(response_1_i)
+                    st.session_state.messages.append({"role": "assistant", "content": response_1_i})
+            
     
