@@ -55,7 +55,6 @@ if uploaded_file is not None:
                                             ).load_data("samplereport.pdf")
             
             tab1, tab2 = st.tabs(["Chatbox", "Parsed Report"])
-            tab2.markdown()
             tab2.download_button("Download",documents_with_instruction[0].text)
 
             with tab1:
