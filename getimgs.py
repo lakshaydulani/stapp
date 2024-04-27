@@ -11,6 +11,11 @@ def save_images():
         # printing number of images found in this page
         if image_list:
             print(f"[+] Found a total of {len(image_list)} images in page {page_index}")
+            
+            #create folder named imgs if it doesnt exist
+            if not os.path.exists("imgs"):
+                os.mkdir("imgs")
+            
         else:
             print("[!] No images found on page", page_index)
         for image_index, img in enumerate(page.get_images(), start=1):
