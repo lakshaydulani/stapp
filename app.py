@@ -27,16 +27,13 @@ uploaded_file = st.file_uploader("Choose a file (PDF only)")
 
 if uploaded_file is not None:    
     bytes_data = uploaded_file.getvalue()
-    cwd = os.getcwd()
-    filename = os.path.join(cwd, "samplereport.pdf")
+    filename = "./samplereport.pdf"
     
     with st.spinner('Working..'):
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
         
         save_images()
-            
-    
 
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
@@ -57,17 +54,21 @@ if uploaded_file is not None:
             recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
             
             query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
+            
         
         
             if "messages" not in st.session_state:
                 st.session_state.messages = []
                 
-            if(isSimilar(prompt, "show the image")):
-                with st.chat_message("assistant"):   
-                    st.image("imgs/image1_1.png", caption="image1_1.png")
-            else:
-                response_1_i = query_engine_instruction.query(prompt)
-                with st.chat_message("assistant"):                    
-                    st.markdown(response_1_i)
-                st.session_state.messages.append({"role": "assistant", "content": response_1_i})
-                
+            if prompt := st.chat_input("Ask your questions about the document"):
+                with st.chat_message("user"):   
+                    st.markdown(prompt)
+                if(isSimilar(prompt, "show the image")):
+                    with st.chat_message("assistant"):   
+                        st.image("imgs/image1_1.png", caption="image1_1.png")
+                else:
+                    response_1_i = query_engine_instruction.query(prompt)
+                    with st.chat_message("assistant"):                    
+                        st.markdown(response_1_i)
+                    st.session_state.messages.append({"role": "assistant", "content": response_1_i})
+                    
