@@ -44,7 +44,7 @@ if uploaded_file is not None:
                                         ).load_data("samplereport.pdf")
         
         ref = documents_with_instruction[0].text
-        st.download_button("Download",documents_with_instruction[0].text)
+        # st.download_button("Download",documents_with_instruction[0].text)
 
     
         node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
