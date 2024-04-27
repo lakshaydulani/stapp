@@ -1,6 +1,7 @@
 import fitz
 from PIL import Image
 import io
+import os
 
 def save_images():
     pdf_file = fitz.open("samplereport.pdf")
