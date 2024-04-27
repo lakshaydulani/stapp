@@ -12,6 +12,7 @@ from llama_index.core.node_parser import MarkdownElementNodeParser
 from getimgs import save_images 
 from sentenceunderstanding import isSimilar
 from glob import glob
+from mdhandle import extract_section
 
 
 os.environ["LLAMA_CLOUD_API_KEY"] = st.secrets["LLAMA_KEY"]
@@ -42,33 +43,35 @@ if uploaded_file is not None:
                                         Output all the tables as it is.""",
                                         ).load_data("samplereport.pdf")
         
-        tab1, tab2 = st.tabs(["Chatbox", "Parsed Report"])
-        tab2.download_button("Download",documents_with_instruction[0].text)
+        ref = documents_with_instruction[0].text
+        st.download_button("Download",documents_with_instruction[0].text)
 
-        with tab1:
-            node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
-            
-            nodes_instruction = node_parser_instruction.get_nodes_from_documents(documents_with_instruction)
-            (base_nodes_instruction,objects_instruction,) = node_parser_instruction.get_nodes_and_objects(nodes_instruction)
+    
+        node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
+        
+        nodes_instruction = node_parser_instruction.get_nodes_from_documents(documents_with_instruction)
+        (base_nodes_instruction,objects_instruction,) = node_parser_instruction.get_nodes_and_objects(nodes_instruction)
 
-            recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
-            
-            query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
-            
+        recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
         
+        query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
         
-            if "messages" not in st.session_state:
-                st.session_state.messages = []
+    
+    
+        if "messages" not in st.session_state:
+            st.session_state.messages = []
+            
+        if prompt := st.chat_input("Ask your questions about the document"):
+            with st.chat_message("user"):   
+                st.markdown(prompt)
+            if(isSimilar(prompt, "show the image")):
+                with st.chat_message("assistant"):   
+                    st.image("imgs/image1_1.png", caption="image1_1.png")
+            elif(extract_section(prompt, ref) != "Section not found"):
+                st.markdown(extract_section(prompt, ref))
+            else:
+                response_1_i = query_engine_instruction.query(prompt)
+                with st.chat_message("assistant"):                    
+                    st.markdown(response_1_i)
+                st.session_state.messages.append({"role": "assistant", "content": response_1_i})
                 
-            if prompt := st.chat_input("Ask your questions about the document"):
-                with st.chat_message("user"):   
-                    st.markdown(prompt)
-                if(isSimilar(prompt, "show the image")):
-                    with st.chat_message("assistant"):   
-                        st.image("imgs/image1_1.png", caption="image1_1.png")
-                else:
-                    response_1_i = query_engine_instruction.query(prompt)
-                    with st.chat_message("assistant"):                    
-                        st.markdown(response_1_i)
-                    st.session_state.messages.append({"role": "assistant", "content": response_1_i})
-                    
