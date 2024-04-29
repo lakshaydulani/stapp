@@ -33,6 +33,7 @@ def get_text_image_score(topic, image):
         "image_path": image,
         "parameters": {"candidate_labels": [topic,"company logo", "person image"]},
     })
+    print(output,"<<<")
     return output[0]["label"]
 
 if __name__ == "__main__":

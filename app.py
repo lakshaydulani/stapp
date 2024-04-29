@@ -36,6 +36,8 @@ if uploaded_file is not None:
             f.write(bytes_data)
         
         save_images()
+        
+        image = get_all_images_score("bottle", glob("imgs/*.*"))
                 
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
@@ -59,7 +61,9 @@ if uploaded_file is not None:
         
         product_name = query_engine_instruction.query("what is the product name")
         
-        image = None #get_all_images_score(product_name, glob("imgs/*.*"))
+        st.write("Product: ", product_name)
+        
+        image = get_all_images_score(product_name, glob("imgs/*.*"))
     
         if "messages" not in st.session_state:
             st.session_state.messages = []
