@@ -59,7 +59,7 @@ if uploaded_file is not None:
         
         product_name = query_engine_instruction.query("what is the product name")
         
-        image = get_all_images_score(product_name, glob("imgs/*.*"))
+        image = None #get_all_images_score(product_name, glob("imgs/*.*"))
     
         if "messages" not in st.session_state:
             st.session_state.messages = []
