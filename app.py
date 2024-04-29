@@ -36,11 +36,7 @@ if uploaded_file is not None:
             f.write(bytes_data)
         
         save_images()
-        
-        output = get_all_images_score("Stainless Steel Bottle Insulator", "imgs/*.*")
-        print(output)
-        
-
+                
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
                                             parsing_instruction="""
