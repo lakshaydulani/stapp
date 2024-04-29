@@ -1,7 +1,5 @@
 from openai import OpenAI
 import streamlit as st
-import pandas as pd
-from io import StringIO
 import os
 from llama_parse import LlamaParse
 from llama_index.llms.openai import OpenAI
@@ -31,9 +29,11 @@ if uploaded_file is not None:
     bytes_data = uploaded_file.getvalue()
     filename = "./samplereport.pdf"
     
-    with st.spinner('Working..'):
+    with st.spinner('Working...'):
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
+        
+        st.toast("Document has been uploaded..")
         
         save_images()
         
@@ -46,9 +46,9 @@ if uploaded_file is not None:
                                         Output all the tables as it is.""",
                                         ).load_data("samplereport.pdf")
         
+        st.toast("Document has been processed..")
+        
         ref = documents_with_instruction[0].text
-        # st.download_button("Download",documents_with_instruction[0].text)
-
     
         node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
         
@@ -59,12 +59,18 @@ if uploaded_file is not None:
         
         query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
         
-        product_name = query_engine_instruction.query("just tell the product name")
+        doc_summary = query_engine_instruction.query("what is the summary of the document")        
+        st.markdown(doc_summary)
         
-        print(product_name)
-        st.markdown(product_name)
+        product_name = query_engine_instruction.query("just tell the product name")     
         
-        image = get_all_images_score("Stainless steel bottle insulator", glob("imgs/*.*"))
+        image = None
+        
+        if(product_name is not None):   
+            st.markdown("The Product is : " + product_name)        
+            image = get_all_images_score(product_name, glob("imgs/*.*"))
+        else:
+            get_all_images_score(product_name, glob("imgs/*.*"))
     
         if "messages" not in st.session_state:
             st.session_state.messages = []
@@ -79,9 +85,20 @@ if uploaded_file is not None:
                     if(image is not None):
                         st.image(image)
                     else:
-                        st.markdown("No matching image found in the document!")
+                        if(image is None):
+                            imgs = glob("imgs/*.*")
+                            if(len(imgs) > 0):
+                                st.write("Here are all the images in the document:")
+                                for image in imgs:
+                                    st.image(image)
+                            else:
+                                st.write("No images found in the document")                               
+                                
+                        
             elif(section_found != "Section not found" and section_found != "Valid prefix not found"):
-                st.markdown(extract_section(prompt, ref))
+                out = extract_section(prompt, ref)
+                st.markdown(out)
+                st.session_state.messages.append({"role": "assistant", "content": out})
             else:
                 response_1_i = query_engine_instruction.query(prompt)
                 with st.chat_message("assistant"):                    

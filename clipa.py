@@ -1,9 +1,10 @@
 import requests
 import base64
 from glob import glob
+import streamlit as st
 
 API_URL = "https://api-inference.huggingface.co/models/openai/clip-vit-large-patch14"
-headers = {"Authorization": "Bearer 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"}
+headers = {"Authorization": "Bearer " + st.secrets["HF_KEY"]}
 
 def query(data):
 	with open(data["image_path"], "rb") as f:
@@ -33,7 +34,6 @@ def get_text_image_score(topic, image):
         "image_path": image,
         "parameters": {"candidate_labels": [topic,"company logo", "person image"]},
     })
-    print(output,"<<<")
     return output[0]["label"]
 
 if __name__ == "__main__":
