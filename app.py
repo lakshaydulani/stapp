@@ -33,8 +33,7 @@ if uploaded_file is not None:
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
         
-        st.toast("Document has been uploaded..")
-        
+       
         save_images()       
                
         documents_with_instruction = LlamaParse(
@@ -44,7 +43,6 @@ if uploaded_file is not None:
                                         Output all the tables as it is.""",
                                         ).load_data("samplereport.pdf")
         
-        st.toast("Document has been processed..")
         
         ref = documents_with_instruction[0].text
     
