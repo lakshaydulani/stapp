@@ -59,12 +59,12 @@ if uploaded_file is not None:
         
         query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
         
-        product_name = query_engine_instruction.query("what is the product name")
+        product_name = query_engine_instruction.query("just tell the product name")
         
         print(product_name)
         st.markdown(product_name)
         
-        image = get_all_images_score(product_name, glob("imgs/*.*"))
+        image = get_all_images_score("Stainless steel bottle insulator", glob("imgs/*.*"))
     
         if "messages" not in st.session_state:
             st.session_state.messages = []
