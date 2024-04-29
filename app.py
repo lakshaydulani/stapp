@@ -62,6 +62,7 @@ if uploaded_file is not None:
         product_name = query_engine_instruction.query("what is the product name")
         
         print(product_name)
+        st.markdown(product_name)
         
         image = get_all_images_score(product_name, glob("imgs/*.*"))
     
