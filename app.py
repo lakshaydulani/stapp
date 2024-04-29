@@ -35,10 +35,8 @@ if uploaded_file is not None:
         
         st.toast("Document has been uploaded..")
         
-        save_images()
-        
-        image = get_all_images_score("bottle", glob("imgs/*.*"))
-                
+        save_images()       
+               
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
                                             parsing_instruction="""
@@ -66,13 +64,16 @@ if uploaded_file is not None:
         
         image = None
         
-        if(product_name is not None):   
-            st.markdown("The Product is : ")
-            st.markdown(product_name)        
-            image = get_all_images_score(product_name, glob("imgs/*.*"))
-        else:
-            get_all_images_score(product_name, glob("imgs/*.*"))
-    
+        try:
+            if(product_name is not None):   
+                st.markdown("The Product is : ")
+                st.markdown(product_name)        
+                image = get_all_images_score(product_name, glob("imgs/*.*"))
+            else:
+                get_all_images_score(product_name, glob("imgs/*.*"))
+        except:
+            st.error("Error in analyzing the images!")
+        
         if "messages" not in st.session_state:
             st.session_state.messages = []
             
