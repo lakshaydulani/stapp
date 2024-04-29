@@ -75,7 +75,7 @@ if uploaded_file is not None:
                 if(product_name is not None):   
                     st.markdown("The Product is : ")
                     st.markdown(product_name)        
-                    image = get_all_images_score(product_name, glob("imgs/*.*"))
+                    image = get_all_images_score("Stainless Steel Bottle Insulator", glob("imgs/*.*"))
                 else:
                     get_all_images_score(product_name, glob("imgs/*.*"))
             except:
