@@ -13,6 +13,7 @@ from getimgs import save_images
 from sentenceunderstanding import isSimilar
 from glob import glob
 from mdhandle import extract_section
+from clipa import get_all_images_score
 
 
 os.environ["LLAMA_CLOUD_API_KEY"] = st.secrets["LLAMA_KEY"]
@@ -35,6 +36,10 @@ if uploaded_file is not None:
             f.write(bytes_data)
         
         save_images()
+        
+        output = get_all_images_score("Stainless Steel Bottle Insulator", "imgs/*.*")
+        print(output)
+        
 
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
@@ -56,7 +61,9 @@ if uploaded_file is not None:
         
         query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
         
-    
+        product_name = query_engine_instruction.query("what is the product name")
+        
+        image = get_all_images_score(product_name, glob("imgs/*.*"))
     
         if "messages" not in st.session_state:
             st.session_state.messages = []
@@ -64,10 +71,15 @@ if uploaded_file is not None:
         if prompt := st.chat_input("Ask your questions about the document"):
             with st.chat_message("user"):   
                 st.markdown(prompt)
+                
+            section_found = extract_section(prompt, ref)
             if(isSimilar(prompt, "show the image")):
                 with st.chat_message("assistant"):   
-                    st.image("imgs/image1_1.png", caption="image1_1.png")
-            elif(extract_section(prompt, ref) != "Section not found"):
+                    if(image is not None):
+                        st.image(image)
+                    else:
+                        st.markdown("No matching image found in the document!")
+            elif(section_found != "Section not found" and section_found != "Valid prefix not found"):
                 st.markdown(extract_section(prompt, ref))
             else:
                 response_1_i = query_engine_instruction.query(prompt)

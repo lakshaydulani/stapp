@@ -33,3 +33,4 @@ def save_images():
             # save it to local disk
             image.save(open(f"imgs/image{page_index+1}_{image_index}.{image_ext}", "wb"))
             
+            
