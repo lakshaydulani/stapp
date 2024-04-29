@@ -16,6 +16,10 @@ def save_images():
             #create folder named imgs if it doesnt exist
             if not os.path.exists("imgs"):
                 os.mkdir("imgs")
+            else:
+                # clear all files inside folder "imgs"
+                for f in os.listdir("imgs"):
+                    os.remove(os.path.join("imgs", f))
             
         else:
             print("[!] No images found on page", page_index)

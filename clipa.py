@@ -38,4 +38,4 @@ def get_text_image_score(topic, image):
 
 if __name__ == "__main__":
 	output = get_all_images_score("Stainless Steel Bottle Insulator", glob("imgs/*.*"))
-	print(type(output[0]))
+	print(output)
