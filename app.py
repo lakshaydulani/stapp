@@ -48,6 +48,7 @@ if uploaded_file is not None:
             st.error("Some error in processing this report.")
         else:
             ref = documents_with_instruction[0].text
+            st.markdown(ref)
         
             node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
             
