@@ -32,13 +32,10 @@ if uploaded_file is not None:
     filename = "./samplereport.pdf"
     
     with st.spinner('Working...'):
-        print(1)
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
-        print(2)
        
-        save_images()       
-        print(3)
+        # save_images()       
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
                                             parsing_instruction="""
@@ -46,7 +43,6 @@ if uploaded_file is not None:
                                         Output all the tables as it is.""",
                                         ).load_data("./samplereport.pdf")
         
-        print(4, documents_with_instruction)
         
         if(len(documents_with_instruction) == 0):
             st.error("Some error in processing this report.")
@@ -58,8 +54,6 @@ if uploaded_file is not None:
             nodes_instruction = node_parser_instruction.get_nodes_from_documents(documents_with_instruction)
             (base_nodes_instruction,objects_instruction,) = node_parser_instruction.get_nodes_and_objects(nodes_instruction)
 
-            print("mid 4")
-
             recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
             
             query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
@@ -67,19 +61,18 @@ if uploaded_file is not None:
             doc_summary = query_engine_instruction.query("what is the summary of the document")        
             st.markdown(doc_summary)
             
-            product_name = query_engine_instruction.query("just tell the product name")     
             
             image = None
             
-            try:
-                if(product_name is not None):   
-                    st.markdown("The Product is : ")
-                    st.markdown(product_name)        
-                    image = get_all_images_score("Stainless Steel Bottle Insulator", glob("imgs/*.*"))
-                else:
-                    get_all_images_score(product_name, glob("imgs/*.*"))
-            except:
-                st.error("Error in analyzing the images!")
+            # try:
+            #     if(product_name is not None):   
+            #         st.markdown("The Product is : ")
+            #         st.markdown(str(product_name))
+            #         image = get_all_images_score("Stainless Steel Bottle Insulator", glob("imgs/*.*"))
+            #     else:
+            #         get_all_images_score(product_name, glob("imgs/*.*"))
+            # except:
+            #     st.error("Error in analyzing the images!")
             
             if "messages" not in st.session_state:
                 st.session_state.messages = []

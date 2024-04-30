@@ -29,11 +29,13 @@ def get_all_images_score(topic, images):
 	return None
 
 
-def get_text_image_score(topic, image): 
+def get_text_image_score(topics, image): 
+    print(image, topics,"<< parameters")
     output = query({
         "image_path": image,
-        "parameters": {"candidate_labels": [topic,"company logo", "person image"]},
+        "parameters": {"candidate_labels": topics},
     })
+    print(output)
     return output[0]["label"]
 
 if __name__ == "__main__":
