@@ -23,7 +23,7 @@ embed_model = OpenAIEmbedding(model="text-embedding-3-small")
 llm = OpenAI(model="gpt-3.5-turbo-0125")
 Settings.llm = llm
 
-st.title("Inspection Report Analyzer")
+st.title("Tables Analyzer")
 
 uploaded_file = st.file_uploader("Choose a file (PDF only)")
 
@@ -39,8 +39,8 @@ if uploaded_file is not None:
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
                                             parsing_instruction="""
-                                        This document is a report.
-                                        Output all the tables as it is.""",
+                                        This document is a policy document.
+Preserve all the tables formatting.""",
                                         ).load_data("./samplereport.pdf")
         
         
@@ -59,8 +59,8 @@ if uploaded_file is not None:
             
             query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
             
-            doc_summary = query_engine_instruction.query("what is the summary of the document")        
-            st.markdown(doc_summary)
+            # doc_summary = query_engine_instruction.query("what is the summary of the document")        
+            # st.markdown(doc_summary)
             
             
             image = None
@@ -81,25 +81,24 @@ if uploaded_file is not None:
             if prompt := st.chat_input("Ask your questions about the document"):
                 with st.chat_message("user"):   
                     st.markdown(prompt)
-                print(6)    
                 section_found = extract_section(prompt, ref)
-                print(7)
-                if(isSimilar(prompt, "show the image")):
-                    with st.chat_message("assistant"):   
-                        if(image is not None):
-                            st.image(image)
-                        else:
-                            if(image is None):
-                                imgs = glob("imgs/*.*")
-                                if(len(imgs) > 0):
-                                    st.write("Here are all the images in the document:")
-                                    for image in imgs:
-                                        st.image(image)
-                                else:
-                                    st.write("No images found in the document")                               
+
+                # if(isSimilar(prompt, "show the image")):
+                #     with st.chat_message("assistant"):   
+                #         if(image is not None):
+                #             st.image(image)
+                #         else:
+                #             if(image is None):
+                #                 imgs = glob("imgs/*.*")
+                #                 if(len(imgs) > 0):
+                #                     st.write("Here are all the images in the document:")
+                #                     for image in imgs:
+                #                         st.image(image)
+                #                 else:
+                #                     st.write("No images found in the document")                               
                                     
-                            
-                elif(section_found != "Section not found" and section_found != "Valid prefix not found"):
+                # elif            
+                if(section_found != "Section not found" and section_found != "Valid prefix not found"):
                     out = extract_section(prompt, ref)
                     st.markdown(out)
                     st.session_state.messages.append({"role": "assistant", "content": out})
