@@ -12,7 +12,7 @@ def query(payload):
 
 
 def isSimilar(sentence, ref):
-    return sentence in ["show me the image", "show me the image of the product in the report", "show the image", "what is the image", "whats the image"]
+    return sentence in ["show me the image", "show me the image of the product in the report", "show the image", "what is the image", "whats the image", "show me the product", "show me the product photo"]
     data = query(
     {
         "inputs": {
