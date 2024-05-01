@@ -47,7 +47,7 @@ if uploaded_file is not None:
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
                                             parsing_instruction="""
-                                        This document is an inspection report.Preserve all the tables. When defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading""",
+                                        This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading""",
                                         ).load_data("./samplereport.pdf")
         
         
