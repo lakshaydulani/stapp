@@ -41,7 +41,7 @@ if uploaded_file is not None:
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
        
-        save_images()       
+        # save_images()       
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
                                             parsing_instruction="""
