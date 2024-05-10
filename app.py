@@ -57,20 +57,20 @@ if uploaded_file is not None:
             f.write(bytes_data)
        
        
-        
+        instruction_with_options = general_instruction_with_options
         
         if(option == "Inspection Report"):
             save_images()
             instruction_with_options = inspection_instruction_with_options
         elif(option == "Medical Report"):
             instruction_with_options = medical_instruction_with_options
-        else:
-            save_images()
-            instruction_with_options = general_instruction_with_options
+            
                
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
-                                            parsing_instruction=instruction_with_options,
+                                            parsing_instruction="""This document is a Medical blood report of a patient. Ignore Comments given in the document. 
+Whenever there is a table with test result in the document, append it to a table with the following column values {TestName} and their {Result}.
+The output should only have markdown tables prefixed with their heading. The markdown output should be sanitized""",
                                         ).load_data("./samplereport.pdf")
         
         
