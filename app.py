@@ -31,23 +31,21 @@ Settings.llm = llm
 
 st.title("Report Analyzer")
 
+option = st.selectbox(
+    "What kind of document do you want to analyze?",
+    ("Inspection Report", "Medical Report","General PDF"))
 
+inspection_instruction_with_options = """This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading"""
 
-inspection_instruction_with_options = """
-                                        This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading"""
-medical_instruction_with_options = """
-                                        This document is a Medical blood report of a patient. Ignore Comments given in the document. 
+medical_instruction_with_options = """This document is a Medical blood report of a patient. Ignore Comments given in the document. 
 Whenever there is a table with test result in the document, append it to a table with the following column values {TestName} and their {Result}.
 The output should only have markdown tables prefixed with their heading. The markdown output should be sanitized"""
 
-general_instruction_with_options = """ Keep the tables in the document as it is. 
-                                     """
+general_instruction_with_options = """Keep the tables in the document as it is."""
 
 uploaded_file = st.file_uploader("Choose a file (PDF only)")
 
-option = st.selectbox(
-    "What kind of document is it?",
-    ("Inspection Report", "Medical Report","General PDF"))
+
 
 if uploaded_file is not None:    
     bytes_data = uploaded_file.getvalue()
