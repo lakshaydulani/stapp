@@ -77,6 +77,11 @@ if uploaded_file is not None:
         else:
             ref = documents_with_instruction[0].text
             st.title("Parsed Document - ")
+        
+            if(is_substring("Stainless Steel Bottle Insulator", ref)):
+                image = "imgs/image1_3.jpeg"
+                st.image(image)
+            
             st.markdown(ref)
         
             # node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
