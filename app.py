@@ -22,8 +22,6 @@ def is_substring(sub, main):
     # Check if the lowercased substring exists within the lowercased main string
     return sub_lower in main_lower
 
-
-
 os.environ["LLAMA_CLOUD_API_KEY"] = st.secrets["LLAMA_KEY"]
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
 
@@ -31,9 +29,24 @@ embed_model = OpenAIEmbedding(model="text-embedding-3-small")
 llm = OpenAI(model="gpt-3.5-turbo-0125")
 Settings.llm = llm
 
-st.title("Inspection Report Analyzer")
+st.title("Report Analyzer")
+
+
+
+instruction_with_options = [{"Inspection Report":"""
+                                        This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading"""},
+                            {"Medical Report":"""
+                                        This document is a Medical blood report of a patient. Ignore Comments given in the document. 
+Whenever there is a table with test result in the document, append it to a table with the following column values {TestName} and their {Result}.
+The output should only have markdown tables prefixed with their heading. The markdown output should be sanitized"""},
+                            {"General PDF":""" Keep the tables in the document as it is. 
+                                     """}]
 
 uploaded_file = st.file_uploader("Choose a file (PDF only)")
+
+option = st.selectbox(
+    "What kind of document is it?",
+    ("Inspection Report", "Medical Report","General PDF"))
 
 if uploaded_file is not None:    
     bytes_data = uploaded_file.getvalue()
@@ -46,8 +59,7 @@ if uploaded_file is not None:
         save_images()       
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
-                                            parsing_instruction="""
-                                        This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading""",
+                                            parsing_instruction=instruction_with_options[option],
                                         ).load_data("./samplereport.pdf")
         
         
@@ -55,7 +67,6 @@ if uploaded_file is not None:
             st.error("Some error in processing this report.")
         else:
             ref = documents_with_instruction[0].text
-            # st.markdown(ref)
         
             node_parser_instruction = MarkdownElementNodeParser(llm=OpenAI(model="gpt-3.5-turbo-0125"), num_workers=8)
             
@@ -64,29 +75,12 @@ if uploaded_file is not None:
 
             recursive_index_instruction = VectorStoreIndex(nodes=base_nodes_instruction + objects_instruction)
             
-            query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)
+            query_engine_instruction = recursive_index_instruction.as_query_engine(similarity_top_k=25)            
             
-            # doc_summary = query_engine_instruction.query("what is the summary of the document")        
-            # st.markdown(doc_summary)
-            
-            
-            image = None
-            
-            #check if a word in there in string python
-            
+            image = None     
             
             if(is_substring("Stainless Steel Bottle Insulator", ref)):
                 image = "imgs/image1_3.jpeg"
-            
-            # try:
-            #     if(product_name is not None):   
-            #         st.markdown("The Product is : ")
-            #         st.markdown(str(product_name))
-            #         image = get_all_images_score("Stainless Steel Bottle Insulator", glob("imgs/*.*"))
-            #     else:
-            #         get_all_images_score(product_name, glob("imgs/*.*"))
-            # except:
-            #     st.error("Error in analyzing the images!")
             
             if "messages" not in st.session_state:
                 st.session_state.messages = []

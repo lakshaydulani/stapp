@@ -9,7 +9,7 @@ import json
 from textblob import TextBlob
 from clipa import get_text_image_score
 
-def images_with_text_pagewise(filename = "reffiles/engineparts.pdf"):
+def images_with_text_pagewise(filename = "reffiles/pdf.pdf"):
     output = []
     pdf_file = fitz.open(filename)
     foldername = "images"
@@ -24,9 +24,13 @@ def images_with_text_pagewise(filename = "reffiles/engineparts.pdf"):
         pageoutput = []
         page = pdf_file[page_index]
         image_list = page.get_images()
-        txt = page.get_text()
+        txt = page.get_text("blocks")
+
+        txts = [block_text[4] for block_text in txt if block_text[4] != " \n"]
+        # print(txts)
         
-        blob = TextBlob(txt) 
+        # blob = TextBlob(txts) 
+        # print(blob.noun_phrases)
         
                     
         for image_index, img in enumerate(page.get_images(), start=1):
@@ -41,7 +45,8 @@ def images_with_text_pagewise(filename = "reffiles/engineparts.pdf"):
             name = f"image{page_index+1}_{image_index}.{image_ext}"
             pageoutput.append(name)
             image.save(open(f"{foldername}/{name}", "wb"))    
-        output.append({"page": page_index, "text": blob.noun_phrases, "images": pageoutput})
+        # output.append({"page": page_index, "text": blob.noun_phrases, "images": pageoutput})
+        output.append({"page": page_index, "text": txts, "images": pageoutput})
     
     #save output as json
     with open("output.json", "w") as f:
@@ -90,5 +95,5 @@ def match_images_with_text_using_clip(filename,st):
          
 if __name__ == "__main__":
     images_with_text_pagewise()
-    match_images_with_text_using_clip()
+    # match_images_with_text_using_clip()
  

@@ -4,3 +4,4 @@ testing/
 imgs/
 reffiles/
 images/
+__pycache__
