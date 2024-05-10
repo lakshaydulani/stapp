@@ -33,14 +33,15 @@ st.title("Report Analyzer")
 
 
 
-instruction_with_options = [{"Inspection Report":"""
-                                        This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading"""},
-                            {"Medical Report":"""
+inspection_instruction_with_options = """
+                                        This document is an inspection report.Preserve all the tables. Only if defects are mentioned in the document, create a separate section named 'Defects' and save information for columns {Critical, Major, Minor} and rows {AQL, Defects found, Max. allowed} in a separate table. Give each section their own heading"""
+medical_instruction_with_options = """
                                         This document is a Medical blood report of a patient. Ignore Comments given in the document. 
 Whenever there is a table with test result in the document, append it to a table with the following column values {TestName} and their {Result}.
-The output should only have markdown tables prefixed with their heading. The markdown output should be sanitized"""},
-                            {"General PDF":""" Keep the tables in the document as it is. 
-                                     """}]
+The output should only have markdown tables prefixed with their heading. The markdown output should be sanitized"""
+
+general_instruction_with_options = """ Keep the tables in the document as it is. 
+                                     """
 
 uploaded_file = st.file_uploader("Choose a file (PDF only)")
 
@@ -52,14 +53,23 @@ if uploaded_file is not None:
     bytes_data = uploaded_file.getvalue()
     filename = "./samplereport.pdf"
     
+    
     with st.spinner('Working...'):
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
        
-        save_images()       
+        save_images()
+        
+        if(option == "Inspection Report"):
+            instruction_with_options = inspection_instruction_with_options
+        elif(option == "Medical Report"):
+            instruction_with_options = medical_instruction_with_options
+        else:
+            instruction_with_options = general_instruction_with_options
+               
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
-                                            parsing_instruction=instruction_with_options[option],
+                                            parsing_instruction=instruction_with_options,
                                         ).load_data("./samplereport.pdf")
         
         
