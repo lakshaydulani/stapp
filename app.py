@@ -58,13 +58,16 @@ if uploaded_file is not None:
         with open(filename, 'wb') as f: 
             f.write(bytes_data)
        
-        save_images()
+       
+        
         
         if(option == "Inspection Report"):
+            save_images()
             instruction_with_options = inspection_instruction_with_options
         elif(option == "Medical Report"):
             instruction_with_options = medical_instruction_with_options
         else:
+            save_images()
             instruction_with_options = general_instruction_with_options
                
         documents_with_instruction = LlamaParse(
