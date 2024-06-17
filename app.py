@@ -7,11 +7,7 @@ from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.core import VectorStoreIndex
 from llama_index.core import Settings
 from llama_index.core.node_parser import MarkdownElementNodeParser
-from getimgs import save_images 
-from sentenceunderstanding import isSimilar
-from glob import glob
-from mdhandle import extract_section
-from clipa import get_all_images_score
+
 
 os.environ["LLAMA_CLOUD_API_KEY"] = st.secrets["LLAMA_KEY"]
 os.environ["OPENAI_API_KEY"] = st.secrets["OPENAI_API_KEY"]
@@ -38,7 +34,7 @@ if uploaded_file is not None:
                
         documents_with_instruction = LlamaParse(
                                         result_type="markdown",
-                                        ).load_data("./samplereport.pdf")
+                                        ).load_data("./samplereport.pptx")
         
         
         if(len(documents_with_instruction) == 0):
