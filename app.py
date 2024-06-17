@@ -22,13 +22,13 @@ Settings.llm = llm
 
 st.title("Report Parser")
 
-uploaded_file = st.file_uploader("Choose a file (PDF only)")
+uploaded_file = st.file_uploader("Choose a file (PPTX only)")
 
 
 
 if uploaded_file is not None:    
     bytes_data = uploaded_file.getvalue()
-    filename = "./samplereport.pdf"
+    filename = "./samplereport.pptx"
     
     
     with st.spinner('Working...'):
